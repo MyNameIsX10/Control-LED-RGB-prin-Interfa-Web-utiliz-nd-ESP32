@@ -2,26 +2,25 @@
 #include <AsyncTCP.h>
 #include <ESPAsyncWebServer.h>
 
-const char* ssid = "Orange-57489E45";  // Numele rețelei WiFi
-const char* password = "7R563YED1YJ";  // Parola rețelei WiFi
+const char* ssid = "Orange-57489E45";  /
+const char* password = "7R563YED1YJ"; 
 
-AsyncWebServer server(80);  // Inițializăm serverul web pe portul 80
+AsyncWebServer server(80);  
 
-// Pini pentru LED RGB
+
 #define PIN_RED   25
 #define PIN_GREEN 26
 #define PIN_BLUE  27
 
-// Variabile pentru a stoca intensitățile curente pentru fiecare canal (PWM)
+
 int redValue = 255;
 int greenValue = 255;
 int blueValue = 255;
-int brightness = 255;  // Luminozitatea generală
+int brightness = 255;  
 
-// Variabilă pentru starea LED-ului (pornit/oprit)
+
 bool ledOn = true;
 
-// Funcția pentru a actualiza LED-ul RGB în funcție de culoare și luminozitate
 void updateLED() {
   if (ledOn) {
     analogWrite(PIN_RED, redValue * brightness / 255);
@@ -35,12 +34,12 @@ void updateLED() {
 }
 
 void setup() {
-  // Inițializăm pini LED RGB ca ieșiri PWM
+ 
   pinMode(PIN_RED, OUTPUT);
   pinMode(PIN_GREEN, OUTPUT);
   pinMode(PIN_BLUE, OUTPUT);
 
-  // Conectare la rețeaua WiFi
+  
   Serial.begin(115200);
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -50,7 +49,6 @@ void setup() {
   Serial.println("Conectat la WiFi!");
   Serial.println(WiFi.localIP());
 
-  // Ruta principală (pagina HTML pentru controlul LED-ului)
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
     request->send(200, "text/html", R"rawliteral(
       <!DOCTYPE html>
@@ -187,37 +185,36 @@ void setup() {
     )rawliteral");
   });
 
-  // Ruta pentru a seta luminozitatea
   server.on("/setBrightness", HTTP_GET, [](AsyncWebServerRequest *request){
     if (request->hasParam("value")) {
       brightness = request->getParam("value")->value().toInt();
-      updateLED();  // Actualizăm LED-ul
+      updateLED(); 
     }
     request->send(200, "text/plain", "OK");
   });
 
-  // Ruta pentru a seta culoarea RGB
+  
   server.on("/setColor", HTTP_GET, [](AsyncWebServerRequest *request){
     if (request->hasParam("red") && request->hasParam("green") && request->hasParam("blue")) {
       redValue = request->getParam("red")->value().toInt();
       greenValue = request->getParam("green")->value().toInt();
       blueValue = request->getParam("blue")->value().toInt();
-      updateLED();  // Actualizăm LED-ul
+      updateLED();  
     }
     request->send(200, "text/plain", "OK");
   });
 
-  // Ruta pentru a porni/opri LED-ul
+ 
   server.on("/toggleLED", HTTP_GET, [](AsyncWebServerRequest *request){
     ledOn = !ledOn;
-    updateLED();  // Actualizăm LED-ul
+    updateLED();  
     request->send(200, "text/plain", "OK");
   });
 
-  // Pornim serverul
+  
   server.begin();
 }
 
 void loop() {
-  // Nimic de făcut aici, serverul web rulează în fundal
+  
 }
