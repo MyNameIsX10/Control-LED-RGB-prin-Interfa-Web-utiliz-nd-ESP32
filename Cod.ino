@@ -44,7 +44,7 @@ void setup() {
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
-    Serial.println("Se incearca conectarea la WiFi...");
+    Serial.println("Se conecteaza la WiFi...");
   }
   Serial.println("Conectat la WiFi!");
   Serial.println(WiFi.localIP());
